@@ -1,0 +1,27 @@
+{
+  "name": "fullstackopen_osa13-sql",
+  "version": "1.0.0",
+  "description": "Full Stack Open - Relaatiotietokannat",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "print:blogs": "node cli.js",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/korvahannu/fullstackopen_osa13-sql.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/korvahannu/fullstackopen_osa13-sql/issues"
+  },
+  "homepage": "https://github.com/korvahannu/fullstackopen_osa13-sql#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.2",
+    "pg": "^8.7.1",
+    "sequelize": "^6.12.0"
+  }
+}

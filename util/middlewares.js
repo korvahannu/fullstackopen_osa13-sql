@@ -6,7 +6,7 @@ const errorHandler = ( error, request, response, next ) => {
   switch(error.name) {
 
     case "SequelizeValidationError":
-      return response.status(400).send({ error: 'Missing required fields or fields dont match criteria' });
+      return response.status(400).send({ error: 'Missing required fields or fields dont match criteria', message: error.message });
 
     case "SequelizeDatabaseError":
       return response.status(400).send({ error: 'Malformatted PUT or POST command' });

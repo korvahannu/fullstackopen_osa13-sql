@@ -1,25 +1,83 @@
 const router = require('express').Router();
-const { Blog } = require('../models');
+const { Blog, User } = require('../models');
+
+const webtoken = require('jsonwebtoken');
+const { SECRET } = require('../util/config');
+
+const { Op } = require('sequelize');
+
+const tokenExtractor = (req, res, next) => {
+
+  const authorization = req.get('authorization');
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    try {
+      req.decodedToken = webtoken.verify(authorization.substring(7), SECRET)
+    }
+    catch (error) {
+      return res.status(401).json({ error: 'token invalid', message: error.message })
+    } 
+  }
+  else {
+    return res.status(401).json({ error: 'token missing' })
+  }
+  next()
+
+};
 
 router.get('/', async (request, response) => {
-  const blogs = await Blog.findAll();
+
+  let where = {}
+
+  if(request.query.search) {
+
+    where = {
+      [Op.or]: [
+        {
+          title: {
+            [Op.substring]: request.query.search
+          }
+        },
+        {
+          author: {
+            [Op.substring]: request.query.search
+          }
+        }
+      ]
+    }
+  }
+
+  const blogs = await Blog.findAll({
+    attributes: { exclude: ['userId']},
+    include: {
+      model: User,
+      attributes: ['name']
+    },
+    where,
+    order: [['likes', 'DESC']]
+  });
+
+
   response.json(blogs);
 });
 
-router.post('/', async (request, response, next) => {
+router.post('/', tokenExtractor, async (req, res, next) => {
   try {
-    console.log('Someone is requiesting to create blog with ' + JSON.stringify(request.body, null, 2));
-    const blog = await Blog.create(request.body);
-    response.json(blog);
+    const user = await User.findByPk(req.decodedToken.id);
+    const blog = await Blog.create({...req.body, userId: user.id});
+    res.json(blog);
   }
   catch(error) {
     next(error);
   }
 });
 
-router.delete('/:id', async (request, response) => {
+router.delete('/:id', tokenExtractor, async (request, response) => {
   const id = request.params.id;
   const blog = await Blog.findByPk(id);
+
+  if(blog.userId !== request.decodedToken.id)
+    return response.status(401).send("You are not authorized to do this");
+
   if(blog) {
     blog.destroy();
     response.status(204).end();

@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "print:blogs": "node cli.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "migration:down": "node util/rollback.js"
   },
   "repository": {
     "type": "git",
@@ -20,9 +21,10 @@
   "homepage": "https://github.com/korvahannu/fullstackopen_osa13-sql#readme",
   "dependencies": {
     "dotenv": "^10.0.0",
-    "express": "^4.17.2",
+    "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.1",
-    "sequelize": "^6.12.0"
+    "sequelize": "^6.6.5",
+    "umzug": "^2.3.0"
   }
 }

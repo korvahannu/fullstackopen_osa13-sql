@@ -2,26 +2,7 @@ const router = require('express').Router();
 const Reading = require('../models/reading');
 const ReadingConnection = require('../models/readingconnection');
 
-const webtoken = require('jsonwebtoken');
-const { SECRET } = require('../util/config');
-
-const tokenExtractor = (req, res, next) => {
-
-  const authorization = req.get('authorization');
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    try {
-      req.decodedToken = webtoken.verify(authorization.substring(7), SECRET)
-    }
-    catch (error) {
-      return res.status(401).json({ error: 'token invalid', message: error.message })
-    } 
-  }
-  else {
-    return res.status(401).json({ error: 'token missing' })
-  }
-  next()
-
-};
+const { tokenExtractor } = require('../util/middlewares');
 
 router.get('/', async (request, response) => {
   const result = await Reading.findAll();
